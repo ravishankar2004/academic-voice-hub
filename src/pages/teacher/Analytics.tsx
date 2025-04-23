@@ -163,7 +163,7 @@ const Analytics = () => {
       setStudentPerformance(studentData);
     } else {
       // Detailed performance for selected student
-      const studentData = filt`eredResults
+      const studentData = filteredResults
         .map((result) => ({
           subject: result.subject,
           percentage: Math.round((result.marks_obtained / result.total_marks) * 100),
