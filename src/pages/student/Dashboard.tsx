@@ -46,9 +46,14 @@ const StudentDashboard = () => {
       const studentResults = allResults.filter((result: ResultData) => result.student_id === userId);
       setResults(studentResults);
       
-      // Extract unique years and semesters
-      const years = Array.from(new Set(studentResults.map((result: ResultData) => result.academic_year)));
-      const semesters = Array.from(new Set(studentResults.map((result: ResultData) => result.semester)));
+      // Extract unique years and semesters with proper type casting
+      const years = Array.from(
+        new Set(studentResults.map((result: ResultData) => result.academic_year))
+      ) as string[];
+      
+      const semesters = Array.from(
+        new Set(studentResults.map((result: ResultData) => result.semester))
+      ) as string[];
       
       setAcademics({
         years,

@@ -70,16 +70,18 @@ const StudentResults = () => {
       );
       setResults(studentResults);
 
-      // Extract unique values for filters
+      // Extract unique values for filters with proper type casting
       const uniqueYears = Array.from(
         new Set(studentResults.map((r: ResultData) => r.academic_year))
-      );
+      ) as string[];
+      
       const uniqueSemesters = Array.from(
         new Set(studentResults.map((r: ResultData) => r.semester))
-      );
+      ) as string[];
+      
       const uniqueSubjects = Array.from(
         new Set(studentResults.map((r: ResultData) => r.subject))
-      );
+      ) as string[];
 
       setYears(uniqueYears);
       setSemesters(uniqueSemesters);

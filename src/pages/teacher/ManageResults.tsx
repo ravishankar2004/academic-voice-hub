@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -76,21 +75,17 @@ const ManageResults = () => {
     total_marks: 100,
   });
   
-  // Load initial data
   useEffect(() => {
     const loadData = () => {
-      // Load results
       const storedResults = localStorage.getItem("results") || "[]";
       const allResults = JSON.parse(storedResults);
       setResults(allResults);
       setFilteredResults(allResults);
       
-      // Load students
       const storedStudents = localStorage.getItem("students") || "[]";
       const allStudents = JSON.parse(storedStudents);
       setStudents(allStudents);
       
-      // Extract unique values for filters
       const uniqueSubjects = Array.from(
         new Set(allResults.map((r: ResultData) => r.subject))
       );
@@ -109,11 +104,9 @@ const ManageResults = () => {
     loadData();
   }, []);
   
-  // Apply filters when filters or search term change
   useEffect(() => {
     let filtered = [...results];
     
-    // Apply search term
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(
@@ -123,7 +116,6 @@ const ManageResults = () => {
       );
     }
     
-    // Apply filters
     if (filters.student) {
       filtered = filtered.filter((result) => result.student_id === filters.student);
     }
@@ -168,11 +160,9 @@ const ManageResults = () => {
     );
     
     if (confirmDelete) {
-      // Remove from localStorage
       const updatedResults = results.filter((result) => result.id !== resultId);
       localStorage.setItem("results", JSON.stringify(updatedResults));
       
-      // Update state
       setResults(updatedResults);
       
       toast({
@@ -198,7 +188,6 @@ const ManageResults = () => {
     if (!editingResult) return;
     
     try {
-      // Validate form
       if (!editFormData.subject) {
         throw new Error("Subject is required");
       }
@@ -215,11 +204,9 @@ const ManageResults = () => {
         throw new Error(`Marks must be between 0 and ${editFormData.total_marks}`);
       }
       
-      // Calculate percentage and grade
       const percentage = (editFormData.marks_obtained / editFormData.total_marks) * 100;
       const grade = calculateGrade(percentage);
       
-      // Update result
       const updatedResult = {
         ...editingResult,
         subject: editFormData.subject,
@@ -230,14 +217,12 @@ const ManageResults = () => {
         grade,
       };
       
-      // Update in localStorage
       const updatedResults = results.map((result) =>
         result.id === editingResult.id ? updatedResult : result
       );
       
       localStorage.setItem("results", JSON.stringify(updatedResults));
       
-      // Update state
       setResults(updatedResults);
       
       toast({
@@ -245,7 +230,6 @@ const ManageResults = () => {
         description: "The result has been updated successfully",
       });
       
-      // Close dialog
       setIsEditDialogOpen(false);
       setEditingResult(null);
     } catch (error: any) {
@@ -287,13 +271,17 @@ const ManageResults = () => {
             <CardContent>
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
-                  <Input
-                    placeholder="Search by student name or subject..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full"
-                    icon={Search}
-                  />
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                      <Search className="h-4 w-4 text-gray-400" />
+                    </div>
+                    <Input
+                      placeholder="Search by student name or subject..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10"
+                    />
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <Button
@@ -317,7 +305,6 @@ const ManageResults = () => {
                 </div>
               </div>
               
-              {/* Active filters */}
               {(filters.student || filters.subject || filters.academicYear || filters.semester) && (
                 <div className="flex flex-wrap gap-2 mt-4">
                   {filters.student && (
@@ -456,7 +443,6 @@ const ManageResults = () => {
         </div>
       </main>
       
-      {/* Filter Dialog */}
       <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -562,7 +548,6 @@ const ManageResults = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent>
           <DialogHeader>
