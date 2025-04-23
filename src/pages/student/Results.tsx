@@ -103,14 +103,14 @@ const StudentResults = () => {
       );
     }
 
-    // Apply filters
-    if (filters.year) {
+    // Apply filters - ensure we only filter if the value is not a special "all_*" value and not empty
+    if (filters.year && filters.year !== "all_years") {
       filtered = filtered.filter((result) => result.academic_year === filters.year);
     }
-    if (filters.semester) {
+    if (filters.semester && filters.semester !== "all_semesters") {
       filtered = filtered.filter((result) => result.semester === filters.semester);
     }
-    if (filters.subject) {
+    if (filters.subject && filters.subject !== "all_subjects") {
       filtered = filtered.filter((result) => result.subject === filters.subject);
     }
 
@@ -165,15 +165,15 @@ const StudentResults = () => {
     // Create text for voice-over
     let speechText = `Results for ${userData.name}, Roll Number ${userData.rollNumber}. `;
     
-    if (filters.year) {
+    if (filters.year && filters.year !== "all_years") {
       speechText += `Academic Year ${filters.year}. `;
     }
     
-    if (filters.semester) {
+    if (filters.semester && filters.semester !== "all_semesters") {
       speechText += `Semester ${filters.semester}. `;
     }
     
-    if (filters.subject) {
+    if (filters.subject && filters.subject !== "all_subjects") {
       speechText += `Subject ${filters.subject}. `;
     }
     
