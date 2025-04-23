@@ -6,7 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { FileText, Plus, Search } from "lucide-react";
+import { FileText, Plus, Search, Users } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface ResultData {
   id: string;
@@ -89,12 +97,12 @@ const TeacherDashboard = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Navigation userType="teacher" userName={userData?.name} />
       
-      <main className="flex-grow p-4 md:p-6 bg-gray-50">
+      <main className="flex-grow p-4 md:p-6">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-academic-900">Teacher Dashboard</h1>
               <p className="text-academic-600">Welcome back, {userData?.name}</p>
@@ -118,33 +126,33 @@ const TeacherDashboard = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <Card className="dash-card">
-              <CardHeader className="pb-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Card className="shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="pb-2 bg-gradient-to-r from-academic-50 to-transparent">
                 <CardTitle className="text-lg font-medium">Total Students</CardTitle>
                 <CardDescription>Number of registered students</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 <p className="text-3xl font-bold text-academic-700">{students.length}</p>
               </CardContent>
             </Card>
             
-            <Card className="dash-card">
-              <CardHeader className="pb-2">
+            <Card className="shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="pb-2 bg-gradient-to-r from-academic-50 to-transparent">
                 <CardTitle className="text-lg font-medium">Total Results</CardTitle>
                 <CardDescription>Number of results recorded</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 <p className="text-3xl font-bold text-academic-700">{results.length}</p>
               </CardContent>
             </Card>
             
-            <Card className="dash-card">
-              <CardHeader className="pb-2">
+            <Card className="shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="pb-2 bg-gradient-to-r from-academic-50 to-transparent">
                 <CardTitle className="text-lg font-medium">Average Grade</CardTitle>
                 <CardDescription>Overall student performance</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 <p className="text-3xl font-bold text-academic-700">
                   {results.length ? (
                     (() => {
@@ -165,16 +173,71 @@ const TeacherDashboard = () => {
             </Card>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <Card>
-              <CardHeader>
+          {/* Student List */}
+          <Card className="mb-8 shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="bg-gradient-to-r from-academic-50 to-transparent">
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="w-5 h-5" />
+                    Student List
+                  </CardTitle>
+                  <CardDescription>
+                    All registered students in the system
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {students.length > 0 ? (
+                <div className="overflow-auto rounded-md border">
+                  <Table>
+                    <TableHeader className="bg-academic-50">
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Roll Number</TableHead>
+                        <TableHead>Results</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {students.map((student) => (
+                        <TableRow key={student.id} className="hover:bg-muted/50">
+                          <TableCell className="font-medium">{student.name}</TableCell>
+                          <TableCell>{student.email}</TableCell>
+                          <TableCell>{student.rollNumber}</TableCell>
+                          <TableCell>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => navigate(`/teacher/analytics?student=${student.id}`)}
+                            >
+                              View Performance
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-academic-600">No students registered yet</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <Card className="shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="bg-gradient-to-r from-academic-50 to-transparent">
                 <CardTitle>Grade Distribution</CardTitle>
                 <CardDescription>
                   Distribution of grades across all subjects
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {gradeDistribution.length > 0 ? (
+                {gradeDistribution.length > 0 && gradeDistribution.some(item => item.count > 0) ? (
                   <div className="h-[300px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
@@ -202,8 +265,8 @@ const TeacherDashboard = () => {
               </CardContent>
             </Card>
             
-            <Card>
-              <CardHeader>
+            <Card className="shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="bg-gradient-to-r from-academic-50 to-transparent">
                 <CardTitle>Subject Performance</CardTitle>
                 <CardDescription>
                   Average performance percentage by subject
@@ -240,8 +303,8 @@ const TeacherDashboard = () => {
             </Card>
           </div>
           
-          <Card>
-            <CardHeader>
+          <Card className="shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="bg-gradient-to-r from-academic-50 to-transparent">
               <div className="flex justify-between items-center">
                 <div>
                   <CardTitle>Recent Results</CardTitle>
@@ -259,29 +322,29 @@ const TeacherDashboard = () => {
             </CardHeader>
             <CardContent>
               {recentResults.length > 0 ? (
-                <div className="overflow-auto">
-                  <table className="w-full border-collapse">
-                    <thead>
-                      <tr className="bg-academic-50 text-academic-700">
-                        <th className="border border-academic-200 p-2 text-left">Student</th>
-                        <th className="border border-academic-200 p-2 text-left">Subject</th>
-                        <th className="border border-academic-200 p-2 text-left">Marks</th>
-                        <th className="border border-academic-200 p-2 text-left">Grade</th>
-                        <th className="border border-academic-200 p-2 text-left">Academic Info</th>
-                      </tr>
-                    </thead>
-                    <tbody>
+                <div className="overflow-auto rounded-md border">
+                  <Table>
+                    <TableHeader className="bg-academic-50">
+                      <TableRow>
+                        <TableHead>Student</TableHead>
+                        <TableHead>Subject</TableHead>
+                        <TableHead>Marks</TableHead>
+                        <TableHead>Grade</TableHead>
+                        <TableHead>Academic Info</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
                       {recentResults.map((result) => (
-                        <tr key={result.id} className="hover:bg-academic-50">
-                          <td className="border border-academic-200 p-2">{result.student_name}</td>
-                          <td className="border border-academic-200 p-2">{result.subject}</td>
-                          <td className="border border-academic-200 p-2">
+                        <TableRow key={result.id} className="hover:bg-muted/50">
+                          <TableCell className="font-medium">{result.student_name}</TableCell>
+                          <TableCell>{result.subject}</TableCell>
+                          <TableCell>
                             {result.marks_obtained}/{result.total_marks}
                             <span className="text-xs text-academic-600 ml-2">
                               ({((result.marks_obtained / result.total_marks) * 100).toFixed(2)}%)
                             </span>
-                          </td>
-                          <td className="border border-academic-200 p-2">
+                          </TableCell>
+                          <TableCell>
                             <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
                               result.grade === "A+" ? "bg-green-100 text-green-800" :
                               result.grade === "A" ? "bg-emerald-100 text-emerald-800" :
@@ -292,14 +355,14 @@ const TeacherDashboard = () => {
                             }`}>
                               {result.grade}
                             </span>
-                          </td>
-                          <td className="border border-academic-200 p-2">
+                          </TableCell>
+                          <TableCell>
                             {result.academic_year}, Semester {result.semester}
-                          </td>
-                        </tr>
+                          </TableCell>
+                        </TableRow>
                       ))}
-                    </tbody>
-                  </table>
+                    </TableBody>
+                  </Table>
                 </div>
               ) : (
                 <div className="text-center py-8">
@@ -320,7 +383,7 @@ const TeacherDashboard = () => {
             <Button
               onClick={() => navigate("/teacher/analytics")}
               variant="outline"
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 bg-academic-50 hover:bg-academic-100"
             >
               <FileText className="w-4 h-4" />
               View Detailed Analytics

@@ -11,6 +11,14 @@ import { Eye, FileText, Volume2, VolumeX } from "lucide-react";
 import { generateResultPDF } from "@/utils/pdfGenerator";
 import textToSpeechService from "@/services/textToSpeech";
 import { Switch } from "@/components/ui/switch";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface ResultData {
   id: string;
@@ -204,32 +212,32 @@ const StudentDashboard = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <Card className="dash-card">
-              <CardHeader className="pb-2">
+            <Card className="shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="pb-2 bg-gradient-to-r from-academic-50 to-transparent">
                 <CardTitle className="text-lg font-medium">Total Subjects</CardTitle>
                 <CardDescription>Number of subjects with results</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 <p className="text-3xl font-bold text-academic-700">{totalSubjects}</p>
               </CardContent>
             </Card>
             
-            <Card className="dash-card">
-              <CardHeader className="pb-2">
+            <Card className="shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="pb-2 bg-gradient-to-r from-academic-50 to-transparent">
                 <CardTitle className="text-lg font-medium">Average Percentage</CardTitle>
                 <CardDescription>Overall performance</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 <p className="text-3xl font-bold text-academic-700">{averagePercentage}%</p>
               </CardContent>
             </Card>
             
-            <Card className="dash-card">
-              <CardHeader className="pb-2">
+            <Card className="shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="pb-2 bg-gradient-to-r from-academic-50 to-transparent">
                 <CardTitle className="text-lg font-medium">Total Marks</CardTitle>
                 <CardDescription>Across all subjects</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 <p className="text-3xl font-bold text-academic-700">
                   {totalMarksObtained}/{totalMaxMarks}
                 </p>
@@ -244,8 +252,8 @@ const StudentDashboard = () => {
             </TabsList>
             
             <TabsContent value="results" className="space-y-4">
-              <Card>
-                <CardHeader>
+              <Card className="shadow-sm hover:shadow-md transition-shadow">
+                <CardHeader className="bg-gradient-to-r from-academic-50 to-transparent">
                   <CardTitle>Your Results</CardTitle>
                   <CardDescription>
                     View and filter your academic results
@@ -322,30 +330,30 @@ const StudentDashboard = () => {
                   </div>
                   
                   {filteredResults.length > 0 ? (
-                    <div className="overflow-auto">
-                      <table className="w-full border-collapse">
-                        <thead>
-                          <tr className="bg-academic-50 text-academic-700">
-                            <th className="border border-academic-200 p-2 text-left">Subject</th>
-                            <th className="border border-academic-200 p-2 text-left">Year</th>
-                            <th className="border border-academic-200 p-2 text-left">Semester</th>
-                            <th className="border border-academic-200 p-2 text-left">Marks</th>
-                            <th className="border border-academic-200 p-2 text-left">Grade</th>
-                          </tr>
-                        </thead>
-                        <tbody>
+                    <div className="overflow-auto rounded-md border">
+                      <Table>
+                        <TableHeader className="bg-academic-50">
+                          <TableRow>
+                            <TableHead>Subject</TableHead>
+                            <TableHead>Year</TableHead>
+                            <TableHead>Semester</TableHead>
+                            <TableHead>Marks</TableHead>
+                            <TableHead>Grade</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
                           {filteredResults.map((result) => (
-                            <tr key={result.id} className="hover:bg-academic-50">
-                              <td className="border border-academic-200 p-2">{result.subject}</td>
-                              <td className="border border-academic-200 p-2">{result.academic_year}</td>
-                              <td className="border border-academic-200 p-2">{result.semester}</td>
-                              <td className="border border-academic-200 p-2">
+                            <TableRow key={result.id} className="hover:bg-muted/50">
+                              <TableCell className="font-medium">{result.subject}</TableCell>
+                              <TableCell>{result.academic_year}</TableCell>
+                              <TableCell>{result.semester}</TableCell>
+                              <TableCell>
                                 {result.marks_obtained}/{result.total_marks}
                                 <span className="text-xs text-academic-600 ml-2">
                                   ({((result.marks_obtained / result.total_marks) * 100).toFixed(2)}%)
                                 </span>
-                              </td>
-                              <td className="border border-academic-200 p-2">
+                              </TableCell>
+                              <TableCell>
                                 <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
                                   result.grade === "A+" ? "bg-green-100 text-green-800" :
                                   result.grade === "A" ? "bg-emerald-100 text-emerald-800" :
@@ -356,11 +364,11 @@ const StudentDashboard = () => {
                                 }`}>
                                   {result.grade}
                                 </span>
-                              </td>
-                            </tr>
+                              </TableCell>
+                            </TableRow>
                           ))}
-                        </tbody>
-                      </table>
+                        </TableBody>
+                      </Table>
                     </div>
                   ) : (
                     <div className="text-center py-8">
@@ -381,8 +389,8 @@ const StudentDashboard = () => {
             </TabsContent>
             
             <TabsContent value="performance">
-              <Card>
-                <CardHeader>
+              <Card className="shadow-sm hover:shadow-md transition-shadow">
+                <CardHeader className="bg-gradient-to-r from-academic-50 to-transparent">
                   <CardTitle>Performance Analysis</CardTitle>
                   <CardDescription>
                     View your performance metrics across subjects
@@ -421,7 +429,7 @@ const StudentDashboard = () => {
                     
                     <div>
                       <h3 className="text-lg font-semibold mb-4">Overall Performance</h3>
-                      <div className="bg-white p-4 rounded-lg border border-academic-100 space-y-6">
+                      <div className="bg-white p-4 rounded-lg border border-academic-100 space-y-6 shadow-sm">
                         <div>
                           <div className="flex justify-between mb-1">
                             <span className="text-sm font-medium text-academic-700">Overall Percentage</span>
