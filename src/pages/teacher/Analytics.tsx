@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,9 +42,9 @@ const Analytics = () => {
   const { userData } = useUser();
   const [results, setResults] = useState<ResultData[]>([]);
   const [students, setStudents] = useState<any[]>([]);
-  const [selectedStudent, setSelectedStudent] = useState<string>("");
-  const [selectedSubject, setSelectedSubject] = useState<string>("");
-  const [selectedYear, setSelectedYear] = useState<string>("");
+  const [selectedStudent, setSelectedStudent] = useState<string>("all_students");
+  const [selectedSubject, setSelectedSubject] = useState<string>("all_subjects");
+  const [selectedYear, setSelectedYear] = useState<string>("all_years");
   
   const [gradeDistribution, setGradeDistribution] = useState<any[]>([]);
   const [studentPerformance, setStudentPerformance] = useState<any[]>([]);
@@ -87,19 +86,19 @@ const Analytics = () => {
     // Filter results based on selections
     let filteredResults = [...results];
     
-    if (selectedStudent) {
+    if (selectedStudent !== "all_students") {
       filteredResults = filteredResults.filter(
         (result) => result.student_id === selectedStudent
       );
     }
     
-    if (selectedSubject) {
+    if (selectedSubject !== "all_subjects") {
       filteredResults = filteredResults.filter(
         (result) => result.subject === selectedSubject
       );
     }
     
-    if (selectedYear) {
+    if (selectedYear !== "all_years") {
       filteredResults = filteredResults.filter(
         (result) => result.academic_year === selectedYear
       );
@@ -132,7 +131,7 @@ const Analytics = () => {
     setGradeDistribution(gradeData);
     
     // Calculate student performance
-    if (!selectedStudent) {
+    if (selectedStudent === "all_students") {
       // Group by student for overview
       const studentGroups: Record<string, { total: number; count: number; student: string }> = {};
       
@@ -240,9 +239,9 @@ const Analytics = () => {
   }, [results, selectedStudent, selectedSubject, selectedYear]);
 
   const clearFilters = () => {
-    setSelectedStudent("");
-    setSelectedSubject("");
-    setSelectedYear("");
+    setSelectedStudent("all_students");
+    setSelectedSubject("all_subjects");
+    setSelectedYear("all_years");
   };
 
   return (
@@ -277,7 +276,7 @@ const Analytics = () => {
                       <SelectValue placeholder="All Students" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Students</SelectItem>
+                      <SelectItem value="all_students">All Students</SelectItem>
                       {students.map((student) => (
                         <SelectItem key={student.id} value={student.id}>
                           {student.name} ({student.rollNumber})
@@ -297,7 +296,7 @@ const Analytics = () => {
                       <SelectValue placeholder="All Subjects" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Subjects</SelectItem>
+                      <SelectItem value="all_subjects">All Subjects</SelectItem>
                       {subjects.map((subject) => (
                         <SelectItem key={subject} value={subject}>
                           {subject}
@@ -317,7 +316,7 @@ const Analytics = () => {
                       <SelectValue placeholder="All Years" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Years</SelectItem>
+                      <SelectItem value="all_years">All Years</SelectItem>
                       {academicYears.map((year) => (
                         <SelectItem key={year} value={year}>
                           {year}
@@ -328,7 +327,7 @@ const Analytics = () => {
                 </div>
               </div>
               
-              {(selectedStudent || selectedSubject || selectedYear) && (
+              {(selectedStudent !== "all_students" || selectedSubject !== "all_subjects" || selectedYear !== "all_years") && (
                 <Button variant="outline" onClick={clearFilters} className="ml-auto block">
                   Clear Filters
                 </Button>
@@ -336,133 +335,65 @@ const Analytics = () => {
             </CardContent>
           </Card>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Grade Distribution</CardTitle>
-                <CardDescription>
-                  Percentage of students achieving each grade
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {gradeDistribution.some((item) => item.count > 0) ? (
-                  <div className="h-[300px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={gradeDistribution}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="count"
-                          label={({ grade, percentage }) => `${grade}: ${percentage}%`}
-                        >
-                          {gradeDistribution.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip formatter={(value) => [`${value} results`, 'Count']} />
-                        <Legend />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : (
-                  <div className="h-[300px] flex items-center justify-center">
-                    <p className="text-academic-600">No grade data available</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {selectedStudent 
-                    ? `${students.find((s) => s.id === selectedStudent)?.name}'s Performance` 
-                    : "Top Student Performance"}
-                </CardTitle>
-                <CardDescription>
-                  {selectedStudent 
-                    ? "Subject-wise performance analysis" 
-                    : "Average percentage across all subjects"}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {studentPerformance.length > 0 ? (
-                  <div className="h-[300px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      {selectedStudent ? (
-                        <BarChart
-                          data={studentPerformance}
-                          margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
-                        >
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis 
-                            dataKey="subject" 
-                            tick={{ fontSize: 12 }} 
-                            angle={-45}
-                            textAnchor="end"
-                            height={80}
-                          />
-                          <YAxis domain={[0, 100]} />
-                          <Tooltip />
-                          <Legend />
-                          <Bar 
-                            dataKey="percentage" 
-                            name="Percentage" 
-                            fill="#0088FE"
-                          />
-                        </BarChart>
-                      ) : (
-                        <BarChart
-                          data={studentPerformance}
-                          margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
-                          layout="vertical"
-                        >
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis type="number" domain={[0, 100]} />
-                          <YAxis 
-                            type="category" 
-                            dataKey="student" 
-                            width={150} 
-                            tick={{ fontSize: 12 }}
-                          />
-                          <Tooltip />
-                          <Legend />
-                          <Bar 
-                            dataKey="averagePercentage" 
-                            name="Average Percentage" 
-                            fill="#00C49F" 
-                          />
-                        </BarChart>
-                      )}
-                    </ResponsiveContainer>
-                  </div>
-                ) : (
-                  <div className="h-[300px] flex items-center justify-center">
-                    <p className="text-academic-600">No student performance data available</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Grade Distribution</CardTitle>
+              <CardDescription>
+                Percentage of students achieving each grade
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {gradeDistribution.some((item) => item.count > 0) ? (
+                <div className="h-[300px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={gradeDistribution}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="count"
+                        label={({ grade, percentage }) => `${grade}: ${percentage}%`}
+                      >
+                        {gradeDistribution.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => [`${value} results`, 'Count']} />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <div className="h-[300px] flex items-center justify-center">
+                  <p className="text-academic-600">No grade data available</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Subject Performance</CardTitle>
-                <CardDescription>
-                  Average performance by subject
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {subjectPerformance.length > 0 ? (
-                  <div className="h-[300px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                {selectedStudent 
+                  ? `${students.find((s) => s.id === selectedStudent)?.name}'s Performance` 
+                  : "Top Student Performance"}
+              </CardTitle>
+              <CardDescription>
+                {selectedStudent 
+                  ? "Subject-wise performance analysis" 
+                  : "Average percentage across all subjects"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {studentPerformance.length > 0 ? (
+                <div className="h-[300px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    {selectedStudent ? (
                       <BarChart
-                        data={subjectPerformance}
+                        data={studentPerformance}
                         margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
                       >
                         <CartesianGrid strokeDasharray="3 3" />
@@ -477,66 +408,130 @@ const Analytics = () => {
                         <Tooltip />
                         <Legend />
                         <Bar 
-                          dataKey="averagePercentage" 
-                          name="Average Percentage" 
-                          fill="#8884d8" 
+                          dataKey="percentage" 
+                          name="Percentage" 
+                          fill="#0088FE"
                         />
                       </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : (
-                  <div className="h-[300px] flex items-center justify-center">
-                    <p className="text-academic-600">No subject performance data available</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Performance Trend</CardTitle>
-                <CardDescription>
-                  Average performance over time
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {yearlyProgress.length > 0 ? (
-                  <div className="h-[300px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={yearlyProgress}
+                    ) : (
+                      <BarChart
+                        data={studentPerformance}
                         margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
+                        layout="vertical"
                       >
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="period" 
-                          tick={{ fontSize: 12 }} 
-                          angle={-45}
-                          textAnchor="end"
-                          height={80}
+                        <XAxis type="number" domain={[0, 100]} />
+                        <YAxis 
+                          type="category" 
+                          dataKey="student" 
+                          width={150} 
+                          tick={{ fontSize: 12 }}
                         />
-                        <YAxis domain={[0, 100]} />
                         <Tooltip />
                         <Legend />
-                        <Line 
-                          type="monotone" 
+                        <Bar 
                           dataKey="averagePercentage" 
-                          name="Average Percentage"
-                          stroke="#FF8042" 
-                          activeDot={{ r: 8 }} 
-                          strokeWidth={2}
+                          name="Average Percentage" 
+                          fill="#00C49F" 
                         />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : (
-                  <div className="h-[300px] flex items-center justify-center">
-                    <p className="text-academic-600">No trend data available</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                      </BarChart>
+                    )}
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <div className="h-[300px] flex items-center justify-center">
+                  <p className="text-academic-600">No student performance data available</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Subject Performance</CardTitle>
+              <CardDescription>
+                Average performance by subject
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {subjectPerformance.length > 0 ? (
+                <div className="h-[300px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={subjectPerformance}
+                      margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis 
+                        dataKey="subject" 
+                        tick={{ fontSize: 12 }} 
+                        angle={-45}
+                        textAnchor="end"
+                        height={80}
+                      />
+                      <YAxis domain={[0, 100]} />
+                      <Tooltip />
+                      <Legend />
+                      <Bar 
+                        dataKey="averagePercentage" 
+                        name="Average Percentage" 
+                        fill="#8884d8" 
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <div className="h-[300px] flex items-center justify-center">
+                  <p className="text-academic-600">No subject performance data available</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Performance Trend</CardTitle>
+              <CardDescription>
+                Average performance over time
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {yearlyProgress.length > 0 ? (
+                <div className="h-[300px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={yearlyProgress}
+                      margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis 
+                        dataKey="period" 
+                        tick={{ fontSize: 12 }} 
+                        angle={-45}
+                        textAnchor="end"
+                        height={80}
+                      />
+                      <YAxis domain={[0, 100]} />
+                      <Tooltip />
+                      <Legend />
+                      <Line 
+                        type="monotone" 
+                        dataKey="averagePercentage" 
+                        name="Average Percentage"
+                        stroke="#FF8042" 
+                        activeDot={{ r: 8 }} 
+                        strokeWidth={2}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <div className="h-[300px] flex items-center justify-center">
+                  <p className="text-academic-600">No trend data available</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>

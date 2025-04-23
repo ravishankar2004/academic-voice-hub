@@ -58,10 +58,10 @@ const ManageResults = () => {
   const [semesters, setSemesters] = useState<string[]>([]);
   
   const [filters, setFilters] = useState({
-    student: "",
-    subject: "",
-    academicYear: "",
-    semester: "",
+    student: "all_students",
+    subject: "all_subjects",
+    academicYear: "all_years",
+    semester: "all_semesters",
   });
   
   const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
@@ -116,19 +116,19 @@ const ManageResults = () => {
       );
     }
     
-    if (filters.student) {
+    if (filters.student !== "all_students") {
       filtered = filtered.filter((result) => result.student_id === filters.student);
     }
     
-    if (filters.subject) {
+    if (filters.subject !== "all_subjects") {
       filtered = filtered.filter((result) => result.subject === filters.subject);
     }
     
-    if (filters.academicYear) {
+    if (filters.academicYear !== "all_years") {
       filtered = filtered.filter((result) => result.academic_year === filters.academicYear);
     }
     
-    if (filters.semester) {
+    if (filters.semester !== "all_semesters") {
       filtered = filtered.filter((result) => result.semester === filters.semester);
     }
     
@@ -137,10 +137,10 @@ const ManageResults = () => {
   
   const clearFilters = () => {
     setFilters({
-      student: "",
-      subject: "",
-      academicYear: "",
-      semester: "",
+      student: "all_students",
+      subject: "all_subjects",
+      academicYear: "all_years",
+      semester: "all_semesters",
     });
     setSearchTerm("");
   };
@@ -463,7 +463,7 @@ const ManageResults = () => {
                   <SelectValue placeholder="All Students" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Students</SelectItem>
+                  <SelectItem value="all_students">All Students</SelectItem>
                   {students.map((student) => (
                     <SelectItem key={student.id} value={student.id}>
                       {student.name} ({student.rollNumber})
@@ -483,7 +483,7 @@ const ManageResults = () => {
                   <SelectValue placeholder="All Subjects" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Subjects</SelectItem>
+                  <SelectItem value="all_subjects">All Subjects</SelectItem>
                   {subjects.map((subject) => (
                     <SelectItem key={subject} value={subject}>
                       {subject}
@@ -503,7 +503,7 @@ const ManageResults = () => {
                   <SelectValue placeholder="All Years" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Years</SelectItem>
+                  <SelectItem value="all_years">All Years</SelectItem>
                   {academicYears.map((year) => (
                     <SelectItem key={year} value={year}>
                       {year}
@@ -523,7 +523,7 @@ const ManageResults = () => {
                   <SelectValue placeholder="All Semesters" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Semesters</SelectItem>
+                  <SelectItem value="all_semesters">All Semesters</SelectItem>
                   {semesters.map((semester) => (
                     <SelectItem key={semester} value={semester}>
                       Semester {semester}
